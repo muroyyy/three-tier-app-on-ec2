@@ -51,22 +51,22 @@ terraform_files/
    ```bash
    terraform init
 3. 📦 Apply the infrastructure:
-
+    ```bash 
     terraform apply
-
+   
 4. 🔑 SSM into the EC2:
-
+    ```bash
     aws ssm start-session --target <instance-id>
 
 5. 🐳 Inside EC2, deploy the app:
-
+    ```bash
     git clone https://github.com/<your-username>/three-tier-app-on-ec2.git
     cd three-tier-app-on-ec2
     sudo docker-compose up -d
 
 6. 🌐 Open your browser:
-
-    "http://<alb-dns-name>"
+    ```bash
+    http://<alb-dns-name>
 
     Find the alb-dns-name by typing "terraform output alb_dns" inside the terraform root directory.
 
