@@ -1,0 +1,35 @@
+# Ignore Terraform state and backups
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+
+# Ignore sensitive vars
+terraform.tfvars
+*.tfvars
+
+# Ignore system/IDE files
+*.log
+*.swp
+*.swo
+*.bak
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Ignore OS-specific files
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# Ignore Python cache if scripts involved
+__pycache__/
+*.pyc
+*.pyo
+
+# Node-related (if you're committing the frontend)
+node_modules/
+dist/
+.env
