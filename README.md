@@ -18,18 +18,16 @@ This project deploys a secure and scalable **three-tier web application** on **A
 
 ## 📦 Project Structure
 
-terraform_files/
-├── main.tf
-├── variables.tf
-├── outputs.tf
-├── terraform.tfvars
-├── modules/
-│ ├── networking/
-│ ├── ec2/
-│ └── alb/
-├── scripts/
-│ └── install.sh
+terraform_files
 
+- main.tf
+- variables.tf
+- outputs.tf
+- terraform.tfvars
+- modules
+    - networking
+    - ec2
+    - alb
 
 ---
 
@@ -60,7 +58,7 @@ terraform_files/
 
 5. 🐳 Inside EC2, deploy the app:
     ```bash
-    git clone https://github.com/<your-username>/three-tier-app-on-ec2.git
+    git clone https://github.com/muroyyy/three-tier-app-on-ec2.git
     cd three-tier-app-on-ec2
     sudo docker-compose up -d
 
