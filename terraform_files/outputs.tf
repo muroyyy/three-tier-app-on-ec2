@@ -1,15 +1,23 @@
 output "vpc_id" {
-  value = aws_vpc.main.id
+  value = module.networking.vpc_id
 }
 
 output "private_subnet_id" {
-  value = aws_subnet.private.id
+  value = module.networking.private_subnet_id
 }
 
-output "public_subnet_id" {
-  value = aws_subnet.public.id
+output "public_subnet_a_id" {
+  value = module.networking.public_subnet_a_id
 }
 
-output "ssm_instance_id" {
-  value = aws_instance.app.id
+output "public_subnet_b_id" {
+  value = module.networking.public_subnet_b_id
+}
+
+output "ec2_instance_id" {
+  value = module.ec2.instance_id
+}
+
+output "alb_dns" {
+  value = module.alb.alb_dns
 }

@@ -1,5 +1,6 @@
 variable "instance_type" {
-  default = "t3.micro"
+  description = "EC2 instance type"
+  default     = "t3.micro"
 }
 
 variable "ami_id" {
@@ -11,5 +12,6 @@ variable "key_name" {
 }
 
 variable "project_name" {
-  default = "devops-app"
+  description = "Common name prefix for all resources"
+  default     = "devops-app"
 }
