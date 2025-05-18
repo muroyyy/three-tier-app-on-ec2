@@ -1,11 +1,6 @@
-provider "aws" {
-  region = "ap-southeast-1"  # Change if needed
-}
-
-#######################
-# 1. VPC & Networking #
-#######################
-
+######################
+# 0. VPC
+######################
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
   tags = {
@@ -13,14 +8,9 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "main-igw"
-  }
-}
-
+######################
+# 1. Public Subnet
+######################
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
@@ -28,6 +18,30 @@ resource "aws_subnet" "public" {
 
   tags = {
     Name = "public-subnet"
+  }
+}
+
+######################
+# 2. Private Subnet
+######################
+resource "aws_subnet" "private" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.2.0/24"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "private-subnet"
+  }
+}
+
+############################
+# 3. Internet Gateway + RT
+############################
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "main-igw"
   }
 }
 
@@ -49,23 +63,50 @@ resource "aws_route_table_association" "public_assoc" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-###########################
-# 2. Security Group       #
-###########################
+#######################
+# 4. NAT Gateway + EIP
+#######################
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
+}
 
-resource "aws_security_group" "allow_http" {
-  name        = "${var.project_name}-sg"
-  description = "Allow HTTP, HTTPS, and optional SSH"
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public.id
+
+  tags = {
+    Name = "main-nat"
+  }
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat.id
+  }
+
+  tags = {
+    Name = "private-rt"
+  }
+}
+
+resource "aws_route_table_association" "private_assoc" {
+  subnet_id      = aws_subnet.private.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+###########################
+# 5. Security Group
+###########################
+resource "aws_security_group" "nginx_sg" {
+  name        = "${var.project_name}-nginx-sg"
+  description = "Allow only HTTP/HTTPS to Nginx"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
+    description = "HTTP"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -73,6 +114,7 @@ resource "aws_security_group" "allow_http" {
   }
 
   ingress {
+    description = "HTTPS"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -85,12 +127,15 @@ resource "aws_security_group" "allow_http" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.project_name}-nginx-sg"
+  }
 }
 
-##############################
-# 3. IAM Role for SSM Access #
-##############################
-
+###########################
+# 6. IAM Role for SSM
+###########################
 resource "aws_iam_role" "ssm_ec2_role" {
   name = "ssm-ec2-role"
 
@@ -116,19 +161,18 @@ resource "aws_iam_instance_profile" "ssm_profile" {
   role = aws_iam_role.ssm_ec2_role.name
 }
 
-##############################
-# 4. EC2 Instance             #
-##############################
-
+###########################
+# 7. EC2 Instance (Private)
+###########################
 resource "aws_instance" "app" {
   ami                         = var.ami_id
   instance_type               = var.instance_type
-  key_name                    = var.key_name
-  subnet_id                   = aws_subnet.public.id
-  vpc_security_group_ids      = [aws_security_group.allow_http.id]
+  subnet_id                   = aws_subnet.private.id
+  vpc_security_group_ids      = [aws_security_group.nginx_sg.id]
+  associate_public_ip_address = false
   iam_instance_profile        = aws_iam_instance_profile.ssm_profile.name
-  associate_public_ip_address = true
   user_data                   = file("${path.module}/scripts/install.sh")
+  key_name                    = var.key_name  # optional; safe to keep for testing
 
   tags = {
     Name = "${var.project_name}-ec2"
