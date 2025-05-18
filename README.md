@@ -66,20 +66,19 @@ terraform_files/
 
 6. 🌐 Open your browser:
 
-    http://<alb-dns-name>
+    "http://<alb-dns-name>"
 
     Find the alb-dns-name by typing "terraform output alb_dns" inside the terraform root directory.
 
 ---
 
 ✅ When to Use
+
 ✅ Best for:
 
-Fullstack apps (React + API)
-
-Projects that require backend security
-
-Production-like testing environments
+- Fullstack apps (React + API)
+- Projects that require backend security
+- Production-like testing environments
 
 ❌ Not ideal for:
 
