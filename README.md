@@ -18,16 +18,39 @@ This project deploys a secure and scalable **three-tier web application** on **A
 
 ## 📦 Project Structure
 
-terraform_files
-
-- main.tf
-- variables.tf
-- outputs.tf
-- terraform.tfvars
-- modules
-    - networking
-    - ec2
-    - alb
+```bash
+.
+├── README.md
+├── backend
+│   ├── Dockerfile
+│   ├── index.js
+│   ├── node_modules
+│   ├── package-lock.json
+│   └── package.json
+├── docker-compose.yml
+├── frontend
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── node_modules
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   └── src
+├── nginx
+│   └── nginx.conf
+├── terraform.tfstate
+└── terraform_files
+    ├── main.tf
+    ├── modules
+    ├── outputs.tf
+    ├── package-lock.json
+    ├── package.json
+    ├── provider.tf
+    ├── terraform.tfstate
+    ├── terraform.tfstate.backup
+    ├── terraform.tfvars
+    └── variables.tf
+```
 
 ---
 
