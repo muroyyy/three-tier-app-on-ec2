@@ -4,7 +4,7 @@ This project deploys a secure and scalable **three-tier web application** on **A
 
 ## 🚀 Tech Stack
 
-- **Frontend**: React + Tailwind CSS
+- **Frontend**: React
 - **Backend**: Node.js (Express or similar)
 - **Infrastructure**: 
   - AWS EC2 (Private Subnet)
